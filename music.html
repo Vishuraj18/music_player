@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css"
+</head>
+<body>
+    <div class="main">
+        <div class="container">
+            <h2 id="title">Lag Ja Gale</h2>
+            <h3 id="artist">Lata Mangeshkar</h3>
+
+            <div class="img_container">
+                <img src="img/1.jpg" alt="">
+            </div>
+
+            <audio src="song/1.mp3" ></audio>
+
+            <div class="progress_bar" id="progress_bar">
+                
+                <div class="progress_div" id="progress_div">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <i class="fas fa-backward" id="prev" title="Previous"></i>
+                <i class="fas fa-play main_button" id="play" title="Play"></i>
+                <i class="fas fa-forward" id="next" title="Next"></i>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        const play= document.getElementById("play");
+        const music= document.querySelector("audio");
+        const img= document.querySelector("img");
+        const title= document.getElementById("title");
+        const artist= document.getElementById("artist");
+        const next= document.getElementById("next");
+        const prev= document.getElementById("prev");
+        const progress_div= document.getElementById("progress_div");
+        const song= [{
+            name:"1",
+            title:"Lag Ja Gale",
+            artist:"LATA Mangeshkar",
+        },
+        {
+            name:"2",
+            title:"Love me Like U do",
+            artist:"Ellie Goulding",
+        },
+        {
+            name:"3",
+            title:"Oh Haseena Zulfo Wali",
+            artist:"Md. Raffi",
+        },
+        {
+            name:"4",
+            title:"Perfect",
+            artist:"Ed Sheeran",
+        },];
+        
+        let progress=document.getElementById("progress");
+        let current= document.getElementById("current");
+        let dur= document.getElementById("dur");
+        let playing=false;
+//play
+        const playM= ()=> {
+            playing=true;
+            music.play();
+            play.classList.replace("fa-play", "fa-pause");
+            img.classList.add("anime");
+        };
+//pause
+        const pauseM =()=> {
+            playing=false;
+            music.pause();
+            play.classList.replace("fa-pause", "fa-play");
+            img.classList.remove("anime");
+        };
+
+        play.addEventListener("click", () =>{
+            if(playing){
+                pauseM();
+            }
+            else{
+                playM();
+            }
+        });
+
+//change
+const load=(song) =>{
+     title.textContent=song.title;
+     artist.textContent=song.artist;
+     music.src="song/"+song.name+ ".mp3";
+     img.src="img/"+song.name+".jpg ";
+};
+        
+        index=0;
+        const nextSong=()=>{
+            index=(index -1+ song.length) % song.length;
+            load(song[index]);
+            playM();
+        };
+        const prevSong=()=>{
+            index=(index +1) % song.length;
+            load(song[index]);
+            playM();
+        };
+
+       //progress
+       music.addEventListener("timeupdate", (event=>{
+        //    console.log(event);
+           const {currentTime, duration}=event.srcElement;
+           let progress_time =(currentTime/duration)*100;
+           progress.style.width=`${progress_time}%`;
+
+        //duration update
+            let min_duration= Math.floor(duration/60);
+            let sec_duration=Math.floor(duration%60);
+            let tot_dur=`${min_duration}:${sec_duration}`;
+            dur.textContent=`${tot_dur}`;
+       }));
+
+       progress_div.addEventListener('click', (event)=>{
+           console.log(event);
+           const { duration }=music;
+
+           let move_p=(event.offsetX/event.srcElement.clientWidth)*duration;
+           music.currentTime=move_p;
+       });
+
+       music.addEventListener("ended" ,nextSong);
+       next.addEventListener("click", nextSong);
+        prev.addEventListener("click", prevSong);
+    </script>
+</body>
+</html>
